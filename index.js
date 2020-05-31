@@ -21,17 +21,12 @@ Module._load = function (request, parent) {
     var pending = pendingMockExports[fullFilePath];
     var mockExport = pending.lazy ? pending.mockExport() : pending.mockExport;
 
-    mockExports[fullFilePath] =
-      typeof mockExport === 'string'
-        ? require(getFullPathNormalized(mockExport, pending.calledFrom))
-        : mockExport;
+    mockExports[fullFilePath] = typeof mockExport === 'string' ? require(getFullPathNormalized(mockExport, pending.calledFrom)) : mockExport;
 
     delete pendingMockExports[fullFilePath];
   }
 
-  return mockExports.hasOwnProperty(fullFilePath)
-    ? mockExports[fullFilePath]
-    : originalLoader.apply(this, arguments);
+  return mockExports.hasOwnProperty(fullFilePath) ? mockExports[fullFilePath] : originalLoader.apply(this, arguments);
 };
 
 function startMocking(path, mockExport, lazy) {
@@ -84,8 +79,7 @@ function getFullPath(path, calledFrom) {
 
   var isLocalModule = /^\.{1,2}[/\\]?/.test(path);
   var isInPath = isInNodePath(resolvedPath);
-  var isExternal =
-    !isLocalModule && /[/\\]node_modules[/\\]/.test(resolvedPath);
+  var isExternal = !isLocalModule && /[/\\]node_modules[/\\]/.test(resolvedPath);
   var isSystemModule = resolvedPath === path;
 
   if (isExternal || isSystemModule || isInPath) {

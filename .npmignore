@@ -1,4 +1,5 @@
 test/
+test-data/
 .eslintignore
 .eslintrc
 .travis.yml
