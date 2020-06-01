@@ -11,13 +11,14 @@ var originalLoader = Module._load;
 
 var mockExports = {};
 var pendingMockExports = {};
+var hasOwnProperty = {}.hasOwnProperty;
 
 Module._load = function (request, parent) {
   if (!parent) return originalLoader.apply(this, arguments);
 
   var fullFilePath = getFullPathNormalized(request, parent.filename);
 
-  if (pendingMockExports.hasOwnProperty(fullFilePath)) {
+  if (hasOwnProperty.call(pendingMockExports, fullFilePath)) {
     var pending = pendingMockExports[fullFilePath];
     var mockExport = pending.lazy ? pending.mockExport() : pending.mockExport;
 
@@ -26,7 +27,7 @@ Module._load = function (request, parent) {
     delete pendingMockExports[fullFilePath];
   }
 
-  return mockExports.hasOwnProperty(fullFilePath) ? mockExports[fullFilePath] : originalLoader.apply(this, arguments);
+  return hasOwnProperty.call(mockExports, fullFilePath) ? mockExports[fullFilePath] : originalLoader.apply(this, arguments);
 };
 
 function startMocking(path, mockExport, lazy) {

@@ -491,9 +491,7 @@ describe('Mock Require', function () {
       mock(
         'module-a',
         function () {
-          {
-            id: 'external-module-a';
-          }
+          return { id: 'external-module-a' };
         },
         true
       );
