@@ -1,0 +1,1 @@
+ignores: ["depcheck", "mocha", "a", "b", "c", "in-node-path", "module-a"]
