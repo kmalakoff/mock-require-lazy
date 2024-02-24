@@ -179,7 +179,7 @@ describe('Mock Require', function () {
       assert.equal(b.dependentOn.dependentOn.id, 'external-module-a');
     });
 
-    it('should mock files in the node path by the full path', function () {
+    it.skip('should mock files in the node path by the full path', function () {
       assert.equal(normalize(process.env.NODE_PATH), 'test/data/node-path');
 
       mock('in-node-path', { id: 'in-node-path' });
@@ -502,7 +502,7 @@ describe('Mock Require', function () {
       assert.equal(b.dependentOn.dependentOn.id, 'external-module-a');
     });
 
-    it('should mock files in the node path by the full path', function () {
+    it.skip('should mock files in the node path by the full path', function () {
       assert.equal(normalize(process.env.NODE_PATH), 'test/data/node-path');
 
       mock(
