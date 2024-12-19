@@ -1,1 +1,1 @@
-ignores: ["depcheck", "mocha", "a", "b", "c", "in-node-path", "module-a"]
+ignores: ["mock-require-lazy", "depcheck", "ts-dev-stack", "@types/*", "mocha", "a", "b", "c", "in-node-path", "module-a"]
