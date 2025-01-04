@@ -33,6 +33,7 @@
   ],
   "scripts": {
     "build": "tsds build",
+    "clean": "node -e \"const dir = require('path').join(require('homedir-polyfill')(), '.im'); try {require('fs').rmdirSync(dir, {recursive: true})} catch(err) {}\"",
     "deploy": "tsds deploy",
     "docs": "tsds docs",
     "format": "biome check --config-path biome.es5.json --write --unsafe src/ test/",
