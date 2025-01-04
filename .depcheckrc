@@ -1,1 +1,1 @@
-ignores: ["depcheck", "mocha", "a", "b", "c", "in-node-path", "module-a"]
+ignores: ["mock-require-lazy", "@types/*", "@biomejs/*", "mocha", "mocha-compat", "a", "b", "c", "in-node-path", "module-a"]
