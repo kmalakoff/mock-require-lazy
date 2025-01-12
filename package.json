@@ -33,9 +33,6 @@
   ],
   "scripts": {
     "build": "tsds build",
-    "clean": "node -e \"const dir = require('path').join(require('homedir-polyfill')(), '.im'); try {require('fs').rmdirSync(dir, {recursive: true})} catch(err) {}\"",
-    "deploy": "tsds deploy",
-    "docs": "tsds docs",
     "format": "biome check --config-path biome.es5.json --write --unsafe src/ test/",
     "test": "mocha-compat --no-timeouts test/spec/**/*.test.js",
     "test:engines": "nvu engines npm test",
@@ -48,7 +45,7 @@
   "devDependencies": {
     "@biomejs/biome": "^1.9.4",
     "@types/mocha": "^10.0.10",
-    "@types/node": "^22.10.2",
+    "@types/node": "^22.10.5",
     "mocha-compat": "^3.6.2"
   },
   "engines": {
