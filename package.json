@@ -43,10 +43,9 @@
     "normalize-path": "^3.0.0"
   },
   "devDependencies": {
-    "@biomejs/biome": "^1.9.4",
-    "@types/mocha": "^10.0.10",
-    "@types/node": "^22.10.5",
-    "mocha-compat": "^3.6.2"
+    "@types/mocha": "*",
+    "@types/node": "*",
+    "mocha-compat": "*"
   },
   "engines": {
     "node": ">=0.8"
