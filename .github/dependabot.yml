@@ -5,8 +5,7 @@ updates:
     schedule:
       interval: weekly
     ignore:
-      - dependency-name: '@types/mocha'
-      - dependency-name: '@types/node'
+      - dependency-name: 'cross-env'
   - package-ecosystem: 'github-actions'
     directory: '/'
     schedule:
