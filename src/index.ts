@@ -1,23 +1,33 @@
-const Module = require('module');
-const dirname = require('path').dirname;
-const join = require('path').join;
-const resolve = require('path').resolve;
-const pathsep = require('path').sep;
-const getCallerFile = require('get-caller-file');
-const normalize = require('normalize-path');
-const originalLoader = Module._load;
+import _Module from 'module';
+import { dirname, join, resolve, sep } from 'path';
+import getCallerFile from 'get-caller-file';
+import normalize from 'normalize-path';
+
+interface ParentT {
+  filename: string;
+}
+interface ModuleT {
+  _load: (request: string, parent?: ParentT) => object;
+  _resolveFilename: (name: string) => string;
+  globalPaths: Array<string>;
+}
+
+const Module = _Module as unknown as ModuleT;
 
 let mockExports = {};
 let pendingMockExports = {};
-const hasOwnPropertyCached = {}.hasOwnProperty;
 
-Module._load = function (request, parent) {
+// biome-ignore lint/suspicious/noShadowRestrictedNames: <explanation>
+const hasOwnProperty = {}.hasOwnProperty;
+
+const originalLoader = Module._load;
+Module._load = function (request: string, parent?: ParentT) {
   // biome-ignore lint/style/noArguments: <explanation>
   if (!parent) return originalLoader.apply(this, arguments);
 
   const fullFilePath = getFullPathNormalized(request, parent.filename);
 
-  if (hasOwnPropertyCached.call(pendingMockExports, fullFilePath)) {
+  if (hasOwnProperty.call(pendingMockExports, fullFilePath)) {
     const pending = pendingMockExports[fullFilePath];
     const mockExport = pending.lazy ? pending.mockExport() : pending.mockExport;
 
@@ -27,7 +37,7 @@ Module._load = function (request, parent) {
   }
 
   // biome-ignore lint/style/noArguments: <explanation>
-  return hasOwnPropertyCached.call(mockExports, fullFilePath) ? mockExports[fullFilePath] : originalLoader.apply(this, arguments);
+  return hasOwnProperty.call(mockExports, fullFilePath) ? mockExports[fullFilePath] : originalLoader.apply(this, arguments);
 };
 
 function startMocking(path, mockExport, lazy) {
@@ -61,11 +71,11 @@ function reRequire(path) {
 function isInNodePath(resolvedPath) {
   if (!resolvedPath) return false;
 
-  return Module.globalPaths.map((nodePath) => resolve(process.cwd(), nodePath) + pathsep).some((fullNodePath) => resolvedPath.indexOf(fullNodePath) === 0);
+  return Module.globalPaths.map((nodePath) => resolve(process.cwd(), nodePath) + sep).some((fullNodePath) => resolvedPath.indexOf(fullNodePath) === 0);
 }
 
 function getFullPath(path, calledFrom) {
-  let resolvedPath;
+  let resolvedPath: string | null;
   try {
     resolvedPath = require.resolve(path);
   } catch (_e) {
@@ -96,7 +106,7 @@ function getFullPath(path, calledFrom) {
   }
 }
 
-function getFullPathNormalized(path, calledFrom) {
+function getFullPathNormalized(path: string, calledFrom: string) {
   return normalize(getFullPath(path, calledFrom));
 }
 
