@@ -26,6 +26,12 @@
   "license": "MIT",
   "author": "Kevin Malakoff <kmalakoff@gmail.com>",
   "type": "commonjs",
+  "exports": {
+    ".": {
+      "require": "./dist/cjs/index.js"
+    },
+    "./package.json": "./package.json"
+  },
   "main": "dist/cjs/index.js",
   "types": "dist/cjs/index.d.cts",
   "files": [
@@ -51,9 +57,6 @@
     "node": ">=0.8"
   },
   "tsds": {
-    "source": "src/index.ts",
-    "targets": [
-      "cjs"
-    ]
+    "source": "src/index.ts"
   }
 }
