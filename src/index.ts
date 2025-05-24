@@ -9,7 +9,7 @@ interface ParentT {
 interface ModuleT {
   _load: (request: string, parent?: ParentT) => object;
   _resolveFilename: (name: string) => string;
-  globalPaths: Array<string>;
+  globalPaths: string[];
 }
 
 const Module = _Module as unknown as ModuleT;
