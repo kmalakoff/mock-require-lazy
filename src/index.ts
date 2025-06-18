@@ -1,7 +1,7 @@
-import _Module from 'module';
-import { dirname, join, resolve, sep } from 'path';
 import getCallerFile from 'get-caller-file';
+import _Module from 'module';
 import normalize from 'normalize-path';
+import { dirname, join, resolve, sep } from 'path';
 
 interface ParentT {
   filename: string;
@@ -17,12 +17,12 @@ const Module = _Module as unknown as ModuleT;
 let mockExports = {};
 let pendingMockExports = {};
 
-// biome-ignore lint/suspicious/noShadowRestrictedNames: <explanation>
+// biome-ignore lint/suspicious/noShadowRestrictedNames: Legacy
 const hasOwnProperty = {}.hasOwnProperty;
 
 const originalLoader = Module._load;
 Module._load = function (request: string, parent?: ParentT) {
-  // biome-ignore lint/style/noArguments: <explanation>
+  // biome-ignore lint/complexity/noArguments: Apply arguments
   if (!parent) return originalLoader.apply(this, arguments);
 
   const fullFilePath = getFullPathNormalized(request, parent.filename);
@@ -36,7 +36,7 @@ Module._load = function (request: string, parent?: ParentT) {
     delete pendingMockExports[fullFilePath];
   }
 
-  // biome-ignore lint/style/noArguments: <explanation>
+  // biome-ignore lint/complexity/noArguments: Apply arguments
   return hasOwnProperty.call(mockExports, fullFilePath) ? mockExports[fullFilePath] : originalLoader.apply(this, arguments);
 };
 
