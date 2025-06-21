@@ -21,7 +21,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/kmalakoff/mock-require-lazy.git"
+    "url": "git+https://github.com/kmalakoff/mock-require-lazy.git"
   },
   "license": "MIT",
   "author": "Kevin Malakoff <kmalakoff@gmail.com>",
