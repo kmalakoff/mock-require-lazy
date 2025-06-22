@@ -40,7 +40,7 @@
   "scripts": {
     "build": "tsds build",
     "format": "biome check --config-path biome.es5.json --write --unsafe src/ test/",
-    "test": "mocha-compat --no-timeouts test/spec/**/*.test.js",
+    "test": "mocha-compat --no-timeouts test/unit/**/*.test.js",
     "test:engines": "nvu engines npm test",
     "version": "tsds version"
   },
