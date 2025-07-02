@@ -19,6 +19,7 @@ let pendingMockExports = {};
 
 // biome-ignore lint/suspicious/noShadowRestrictedNames: Legacy
 const hasOwnProperty = {}.hasOwnProperty;
+const startsWith = (string, check) => string.lastIndexOf(check, 0) === 0;
 
 const originalLoader = Module._load;
 Module._load = function (request: string, parent?: ParentT) {
@@ -71,7 +72,7 @@ function reRequire(path) {
 function isInNodePath(resolvedPath) {
   if (!resolvedPath) return false;
 
-  return Module.globalPaths.map((nodePath) => resolve(process.cwd(), nodePath) + sep).some((fullNodePath) => resolvedPath.indexOf(fullNodePath) === 0);
+  return Module.globalPaths.map((nodePath) => resolve(process.cwd(), nodePath) + sep).some((fullNodePath) => startsWith(resolvedPath, fullNodePath));
 }
 
 function getFullPath(path, calledFrom) {
