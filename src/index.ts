@@ -42,7 +42,7 @@ Module._load = function (request: string, parent?: ParentT) {
 };
 
 export type MockExport = string | (() => unknown);
-export default function mock(path: string, mockExport: MockExport, lazy: boolean): void {
+export default function mock(path: string, mockExport: MockExport, lazy?: boolean): void {
   const calledFrom = getCallerFile();
 
   pendingMockExports[getFullPathNormalized(path, calledFrom)] = {
