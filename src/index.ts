@@ -2,6 +2,7 @@ import getCallerFile from 'get-caller-file';
 import _Module from 'module';
 import normalize from 'normalize-path';
 import { dirname, join, resolve, sep } from 'path';
+import url from 'url';
 
 interface ParentT {
   filename: string;
@@ -43,7 +44,7 @@ Module._load = function (request: string, parent?: ParentT) {
 };
 
 function stripFileProtocol(calledFrom) {
-  return calledFrom.indexOf('file://', 0) === 0 ? calledFrom.substring(7) : calledFrom;
+  return calledFrom.indexOf('file://', 0) === 0 ? url.fileURLToPath(calledFrom) : calledFrom;
 }
 
 export type MockExport = (() => unknown) | unknown;
