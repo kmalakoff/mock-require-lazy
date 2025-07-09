@@ -13,6 +13,7 @@ interface ModuleT {
 }
 
 const Module = _Module as unknown as ModuleT;
+const _require = typeof require === 'undefined' ? _Module.createRequire(import.meta.url) : require;
 
 let mockExports = {};
 let pendingMockExports = {};
@@ -32,7 +33,7 @@ Module._load = function (request: string, parent?: ParentT) {
     const pending = pendingMockExports[fullFilePath];
     const mockExport = pending.lazy ? pending.mockExport() : pending.mockExport;
 
-    mockExports[fullFilePath] = typeof mockExport === 'string' ? require(getFullPathNormalized(mockExport, pending.calledFrom)) : mockExport;
+    mockExports[fullFilePath] = typeof mockExport === 'string' ? _require(getFullPathNormalized(mockExport, pending.calledFrom)) : mockExport;
 
     delete pendingMockExports[fullFilePath];
   }
@@ -41,9 +42,14 @@ Module._load = function (request: string, parent?: ParentT) {
   return hasOwnProperty.call(mockExports, fullFilePath) ? mockExports[fullFilePath] : originalLoader.apply(this, arguments);
 };
 
-export type MockExport = string | (() => unknown);
+function stripFileProtocol(calledFrom) {
+  return calledFrom.indexOf('file://', 0) === 0 ? calledFrom.substring(7) : calledFrom;
+}
+
+export type MockExport = (() => unknown) | unknown;
+
 export default function mock(path: string, mockExport: MockExport, lazy?: boolean): void {
-  const calledFrom = getCallerFile();
+  const calledFrom = stripFileProtocol(getCallerFile());
 
   pendingMockExports[getFullPathNormalized(path, calledFrom)] = {
     mockExport: mockExport,
@@ -53,7 +59,7 @@ export default function mock(path: string, mockExport: MockExport, lazy?: boolea
 }
 
 export const stop = function stopMocking(path: string): void {
-  const calledFrom = getCallerFile();
+  const calledFrom = stripFileProtocol(getCallerFile());
   const fullPath = getFullPathNormalized(path, calledFrom);
   delete pendingMockExports[fullPath];
   delete mockExports[fullPath];
@@ -65,10 +71,13 @@ export const stopAll = function stopMockingAll(): void {
 };
 
 export const reRequire = function reRequire(path: string): unknown {
-  const module = getFullPathNormalized(path, getCallerFile());
-  delete require.cache[require.resolve(module)];
-  return require(module);
+  const module = getFullPathNormalized(path, stripFileProtocol(getCallerFile()));
+  delete _require.cache[_require.resolve(module)];
+  return _require(module);
 };
+mock.stop = stop;
+mock.stopAll = stopAll;
+mock.reRequire = reRequire;
 
 function isInNodePath(resolvedPath) {
   if (!resolvedPath) return false;

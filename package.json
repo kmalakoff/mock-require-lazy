@@ -25,9 +25,10 @@
   },
   "license": "MIT",
   "author": "Kevin Malakoff <kmalakoff@gmail.com>",
-  "type": "commonjs",
+  "type": "module",
   "exports": {
     ".": {
+      "import": "./dist/esm/index.js",
       "require": "./dist/cjs/index.js"
     },
     "./package.json": "./package.json"
@@ -40,7 +41,7 @@
   "scripts": {
     "build": "tsds build",
     "format": "biome check --config-path biome.es5.json --write --unsafe src/ test/",
-    "test": "mocha-compat --no-timeouts test/unit/**/*.test.js",
+    "test": "tsds test:node --no-timeouts",
     "test:engines": "nvu engines npm test",
     "version": "tsds version"
   },
