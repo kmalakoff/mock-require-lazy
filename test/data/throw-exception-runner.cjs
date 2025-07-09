@@ -1,4 +1,4 @@
 'use strict';
 
-require('./throw-exception');
+require('./throw-exception.cjs');
 delete require.cache[__filename];
