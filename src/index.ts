@@ -41,7 +41,8 @@ Module._load = function (request: string, parent?: ParentT) {
   return hasOwnProperty.call(mockExports, fullFilePath) ? mockExports[fullFilePath] : originalLoader.apply(this, arguments);
 };
 
-function startMocking(path, mockExport, lazy) {
+export type MockExport = string | (() => unknown);
+export default function mock(path: string, mockExport: MockExport, lazy: boolean): void {
   const calledFrom = getCallerFile();
 
   pendingMockExports[getFullPathNormalized(path, calledFrom)] = {
@@ -51,23 +52,23 @@ function startMocking(path, mockExport, lazy) {
   };
 }
 
-function stopMocking(path) {
+export const stop = function stopMocking(path: string): void {
   const calledFrom = getCallerFile();
   const fullPath = getFullPathNormalized(path, calledFrom);
   delete pendingMockExports[fullPath];
   delete mockExports[fullPath];
-}
+};
 
-function stopMockingAll() {
+export const stopAll = function stopMockingAll(): void {
   mockExports = {};
   pendingMockExports = {};
-}
+};
 
-function reRequire(path) {
+export const reRequire = function reRequire(path: string): unknown {
   const module = getFullPathNormalized(path, getCallerFile());
   delete require.cache[require.resolve(module)];
   return require(module);
-}
+};
 
 function isInNodePath(resolvedPath) {
   if (!resolvedPath) return false;
@@ -114,8 +115,3 @@ function getFullPathNormalized(path: string, calledFrom: string) {
 function isModuleNotFoundError(e) {
   return e.code && e.code === 'MODULE_NOT_FOUND';
 }
-
-module.exports = startMocking;
-module.exports.stop = stopMocking;
-module.exports.stopAll = stopMockingAll;
-module.exports.reRequire = reRequire;
