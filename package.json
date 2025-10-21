@@ -1,6 +1,6 @@
 {
   "name": "mock-require-lazy",
-  "version": "2.0.4",
+  "version": "2.0.5",
   "description": "Simple, intuitive mocking of Node.js modules. Fork of mock-require adding lazy require and is a drop in replacement for mock-require",
   "keywords": [
     "require",
