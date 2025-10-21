@@ -1,5 +1,4 @@
 import assert from 'assert';
-// @ts-ignore
 import mock from 'mock-require-lazy';
 import Module from 'module';
 import normalize from 'normalize-path';
