@@ -41,6 +41,7 @@
   "scripts": {
     "build": "tsds build",
     "format": "biome check --config-path biome.es5.json --write --unsafe src/ test/",
+    "prepublishOnly": "tsds validate",
     "test": "tsds test:node --no-timeouts",
     "test:engines": "nvu engines npm test",
     "version": "tsds version"
