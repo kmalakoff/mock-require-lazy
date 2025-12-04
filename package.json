@@ -41,7 +41,7 @@
   ],
   "scripts": {
     "build": "tsds build",
-    "format": "biome check --config-path biome.es5.json --write --unsafe src/ test/",
+    "format": "tsds format",
     "prepublishOnly": "tsds validate",
     "test": "tsds test:node --no-timeouts",
     "test:engines": "nvu engines npm test",
@@ -52,12 +52,12 @@
     "normalize-path": "*"
   },
   "devDependencies": {
-    "@biomejs/biome": "*",
     "@types/mocha": "*",
     "@types/node": "*",
     "mocha-compat": "*",
     "node-version-use": "*",
-    "ts-dev-stack": "*"
+    "ts-dev-stack": "*",
+    "tsds-config": "*"
   },
   "engines": {
     "node": ">=0.8"
