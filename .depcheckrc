@@ -1,1 +1,1 @@
-ignores: ["node-version-use", "ts-dev-stack", "@biomejs/biome", "mock-require-lazy", "mocha", "mocha-compat", "a", "b", "c", "in-node-path", "module-a"]
+ignores: ["node-version-use", "ts-dev-stack", "mock-require-lazy", "mocha-compat", "a", "b", "c", "in-node-path", "module-a"]
