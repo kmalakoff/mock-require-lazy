@@ -23,7 +23,7 @@ describe('Mock Require', () => {
         fn: () => 'mocked obj',
       });
 
-      var obj = _require('../data/exported-obj.cjs');
+      let obj = _require('../data/exported-obj.cjs');
       assert.equal(obj.fn(), 'mocked obj');
       assert.equal(obj.mocked, true);
 
@@ -39,7 +39,7 @@ describe('Mock Require', () => {
 
       mock.stop('../data/exported-fn.cjs');
 
-      var fn = _require('../data/exported-fn.cjs');
+      const fn = _require('../data/exported-fn.cjs');
       assert.equal(fn(), 'exported function');
     });
 
@@ -51,14 +51,14 @@ describe('Mock Require', () => {
     it('should mock a standard lib', () => {
       mock('fs', { mocked: true });
 
-      var fs = _require('fs');
+      const fs = _require('fs');
       assert.equal(fs.mocked, true);
     });
 
     it('should mock an external lib', () => {
       mock('mocha', { mocked: true });
 
-      var mocha = _require('mocha');
+      const mocha = _require('mocha');
       assert.equal(mocha.mocked, true);
     });
 
@@ -78,7 +78,7 @@ describe('Mock Require', () => {
       mock('path', { mocked: true });
       mock('fs', 'path');
 
-      var fs = _require('fs');
+      const fs = _require('fs');
       assert.equal(fs.mocked, true);
     });
 
@@ -105,8 +105,8 @@ describe('Mock Require', () => {
     it('should stop all mocks', () => {
       mock('fs', {});
       mock('path', {});
-      var fsMock = _require('fs');
-      var pathMock = _require('path');
+      const fsMock = _require('fs');
+      const pathMock = _require('path');
 
       mock.stopAll();
 
@@ -154,7 +154,7 @@ describe('Mock Require', () => {
     });
 
     it('should unmock a module that is not found', () => {
-      var moduleName = 'module-that-is-not-installed';
+      const moduleName = 'module-that-is-not-installed';
 
       mock(moduleName, { mocked: true });
       mock.stop(moduleName);
@@ -170,7 +170,7 @@ describe('Mock Require', () => {
     it('should differentiate between local files and external modules with the same name', () => {
       mock('module-a', { id: 'external-module-a' });
 
-      var b = _require('../data/module-b.cjs');
+      const b = _require('../data/module-b.cjs');
 
       assert.equal(b.dependentOn.id, 'local-module-a');
       assert.equal(b.dependentOn.dependentOn.id, 'external-module-a');
@@ -181,8 +181,8 @@ describe('Mock Require', () => {
 
       mock('in-node-path', { id: 'in-node-path' });
 
-      var b = _require('in-node-path');
-      var c = _require('../data/node-path/in-node-path.cjs');
+      const b = _require('in-node-path');
+      const c = _require('../data/node-path/in-node-path.cjs');
 
       assert.equal(b.id, 'in-node-path');
       assert.equal(c.id, 'in-node-path');
@@ -201,7 +201,7 @@ describe('Mock Require', () => {
     it('should mock a standard lib', () => {
       mock('fs', () => ({ mocked: true }), true);
 
-      var fs = _require('fs');
+      const fs = _require('fs');
       assert.equal(fs.mocked, true);
     });
 
@@ -215,7 +215,7 @@ describe('Mock Require', () => {
         true
       );
 
-      var obj = _require('../data/exported-obj.cjs');
+      let obj = _require('../data/exported-obj.cjs');
       assert.equal(obj.fn(), 'mocked obj');
       assert.equal(obj.mocked, true);
 
@@ -231,7 +231,7 @@ describe('Mock Require', () => {
 
       mock.stop('../data/exported-fn.cjs');
 
-      var fn = _require('../data/exported-fn.cjs');
+      const fn = _require('../data/exported-fn.cjs');
       assert.equal(fn(), 'exported function');
     });
 
@@ -256,7 +256,7 @@ describe('Mock Require', () => {
       mock('path', () => ({ mocked: true }), true);
       mock('fs', 'path');
 
-      var fs = _require('fs');
+      const fs = _require('fs');
       assert.equal(fs.mocked, true);
     });
 
@@ -283,8 +283,8 @@ describe('Mock Require', () => {
     it('should stop all mocks', () => {
       mock('fs', () => ({}), true);
       mock('path', () => ({}), true);
-      var fsMock = _require('fs');
-      var pathMock = _require('path');
+      const fsMock = _require('fs');
+      const pathMock = _require('path');
 
       mock.stopAll();
 
@@ -332,7 +332,7 @@ describe('Mock Require', () => {
     });
 
     it('should unmock a module that is not found', () => {
-      var moduleName = 'module-that-is-not-installed';
+      const moduleName = 'module-that-is-not-installed';
 
       mock(moduleName, () => ({ mocked: true }), true);
       mock.stop(moduleName);
@@ -348,7 +348,7 @@ describe('Mock Require', () => {
     it('should differentiate between local files and external modules with the same name', () => {
       mock('module-a', () => ({ id: 'external-module-a' }), true);
 
-      var b = _require('../data/module-b.cjs');
+      const b = _require('../data/module-b.cjs');
 
       assert.equal(b.dependentOn.id, 'local-module-a');
       assert.equal(b.dependentOn.dependentOn.id, 'external-module-a');
@@ -359,8 +359,8 @@ describe('Mock Require', () => {
 
       mock('in-node-path', () => ({ id: 'in-node-path' }), true);
 
-      var b = _require('in-node-path');
-      var c = _require('../data/node-path/in-node-path.cjs');
+      const b = _require('in-node-path');
+      const c = _require('../data/node-path/in-node-path.cjs');
 
       assert.equal(b.id, 'in-node-path');
       assert.equal(c.id, 'in-node-path');
