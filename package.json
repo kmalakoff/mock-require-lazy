@@ -52,12 +52,12 @@
     "normalize-path": "^3.0.0"
   },
   "devDependencies": {
-    "@types/mocha": "^10.0.10",
-    "@types/node": "^25.0.1",
+    "@types/mocha": "*",
+    "@types/node": "*",
     "mocha-compat": "^3.6.3",
-    "node-version-use": "^2.1.5",
-    "ts-dev-stack": "^1.21.3",
-    "tsds-config": "^0.2.1"
+    "node-version-use": "*",
+    "ts-dev-stack": "*",
+    "tsds-config": "*"
   },
   "engines": {
     "node": ">=0.8"
