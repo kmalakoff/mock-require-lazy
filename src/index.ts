@@ -8,31 +8,40 @@ interface ParentT {
   filename: string;
 }
 interface ModuleT {
-  _load: (request: string, parent?: ParentT) => object;
+  _load: (request: string, parent?: ParentT) => unknown;
   _resolveFilename: (name: string) => string;
   globalPaths: string[];
+}
+
+export type MockExport = (() => unknown) | unknown;
+
+interface PendingMockExport {
+  mockExport: MockExport;
+  calledFrom: string;
+  lazy?: boolean;
 }
 
 const Module = _Module as unknown as ModuleT;
 const _require = typeof require === 'undefined' ? _Module.createRequire(import.meta.url) : require;
 
-let mockExports = {};
-let pendingMockExports = {};
+let mockExports: Record<string, unknown> = {};
+let pendingMockExports: Record<string, PendingMockExport> = {};
 
 // biome-ignore lint/suspicious/noShadowRestrictedNames: Legacy
 const hasOwnProperty = {}.hasOwnProperty;
-const startsWith = (string, check) => string.lastIndexOf(check, 0) === 0;
+const startsWith = (string: string, check: string) => string.lastIndexOf(check, 0) === 0;
 
 const originalLoader = Module._load;
 Module._load = function (request: string, parent?: ParentT) {
   // biome-ignore lint/complexity/noArguments: Apply arguments
-  if (!parent) return originalLoader.apply(this, arguments);
+  // biome-ignore lint/complexity/noBannedTypes: .apply bypass needed for IArguments
+  if (!parent) return (originalLoader as Function).apply(this, arguments);
 
   const fullFilePath = getFullPathNormalized(request, parent.filename);
 
   if (hasOwnProperty.call(pendingMockExports, fullFilePath)) {
     const pending = pendingMockExports[fullFilePath];
-    const mockExport = pending.lazy ? pending.mockExport() : pending.mockExport;
+    const mockExport = pending.lazy ? (pending.mockExport as () => unknown)() : pending.mockExport;
 
     mockExports[fullFilePath] = typeof mockExport === 'string' ? _require(getFullPathNormalized(mockExport, pending.calledFrom)) : mockExport;
 
@@ -40,15 +49,13 @@ Module._load = function (request: string, parent?: ParentT) {
   }
 
   // biome-ignore lint/complexity/noArguments: Apply arguments
-  return hasOwnProperty.call(mockExports, fullFilePath) ? mockExports[fullFilePath] : originalLoader.apply(this, arguments);
+  // biome-ignore lint/complexity/noBannedTypes: .apply bypass needed for IArguments
+  return hasOwnProperty.call(mockExports, fullFilePath) ? mockExports[fullFilePath] : (originalLoader as Function).apply(this, arguments);
 };
 
-function stripFileProtocol(calledFrom) {
+function stripFileProtocol(calledFrom: string) {
   return calledFrom.indexOf('file://', 0) === 0 ? url.fileURLToPath(calledFrom) : calledFrom;
 }
-
-export type MockExport = (() => unknown) | unknown;
-
 export default function mock(path: string, mockExport: MockExport, lazy?: boolean): void {
   const calledFrom = stripFileProtocol(getCallerFile());
 
@@ -80,14 +87,14 @@ mock.stop = stop;
 mock.stopAll = stopAll;
 mock.reRequire = reRequire;
 
-function isInNodePath(resolvedPath) {
+function isInNodePath(resolvedPath: string | null) {
   if (!resolvedPath) return false;
 
   return Module.globalPaths.map((nodePath) => resolve(process.cwd(), nodePath) + sep).some((fullNodePath) => startsWith(resolvedPath, fullNodePath));
 }
 
-function getFullPath(path, calledFrom) {
-  let resolvedPath: string | null;
+function getFullPath(path: string, calledFrom: string) {
+  let resolvedPath: string | null = null;
   try {
     resolvedPath = require.resolve(path);
   } catch (_e) {
@@ -96,7 +103,7 @@ function getFullPath(path, calledFrom) {
 
   const isLocalModule = /^\.{1,2}[/\\]?/.test(path);
   const isInPath = isInNodePath(resolvedPath);
-  const isExternal = !isLocalModule && /[/\\]node_modules[/\\]/.test(resolvedPath);
+  const isExternal = !isLocalModule && resolvedPath !== null && /[/\\]node_modules[/\\]/.test(resolvedPath);
   const isSystemModule = resolvedPath === path;
 
   if (isExternal || isSystemModule || isInPath) {
@@ -111,7 +118,7 @@ function getFullPath(path, calledFrom) {
   try {
     return Module._resolveFilename(localModuleName);
   } catch (e) {
-    if (isModuleNotFoundError(e)) {
+    if (isModuleNotFoundError(e as NodeJS.ErrnoException)) {
       return localModuleName;
     }
     throw e;
@@ -119,9 +126,10 @@ function getFullPath(path, calledFrom) {
 }
 
 function getFullPathNormalized(path: string, calledFrom: string) {
-  return normalize(getFullPath(path, calledFrom));
+  const fullPath = getFullPath(path, calledFrom);
+  return normalize(fullPath ?? path);
 }
 
-function isModuleNotFoundError(e) {
+function isModuleNotFoundError(e: NodeJS.ErrnoException) {
   return e.code && e.code === 'MODULE_NOT_FOUND';
 }

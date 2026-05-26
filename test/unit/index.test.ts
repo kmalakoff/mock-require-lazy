@@ -98,7 +98,7 @@ describe('Mock Require', () => {
         _require('../data/throw-exception-runner.cjs');
         throw new Error('this line should never be executed.');
       } catch (error) {
-        assert.equal(error.message, 'this should run when required');
+        assert.equal((error as Error).message, 'this should run when required');
       }
     });
 
@@ -163,7 +163,7 @@ describe('Mock Require', () => {
         _require(moduleName);
         throw new Error('this line should never be executed.');
       } catch (e) {
-        assert.equal(e.code, 'MODULE_NOT_FOUND');
+        assert.equal((e as NodeJS.ErrnoException).code, 'MODULE_NOT_FOUND');
       }
     });
 
@@ -177,7 +177,7 @@ describe('Mock Require', () => {
     });
 
     it.skip('should mock files in the node path by the full path', () => {
-      assert.equal(normalize(process.env.NODE_PATH), 'test/data/node-path');
+      assert.equal(normalize(process.env.NODE_PATH ?? ''), 'test/data/node-path');
 
       mock('in-node-path', { id: 'in-node-path' });
 
@@ -276,7 +276,7 @@ describe('Mock Require', () => {
         _require('../data/throw-exception-runner.cjs');
         throw new Error('this line should never be executed.');
       } catch (error) {
-        assert.equal(error.message, 'this should run when required');
+        assert.equal((error as Error).message, 'this should run when required');
       }
     });
 
@@ -341,7 +341,7 @@ describe('Mock Require', () => {
         _require(moduleName);
         throw new Error('this line should never be executed.');
       } catch (e) {
-        assert.equal(e.code, 'MODULE_NOT_FOUND');
+        assert.equal((e as NodeJS.ErrnoException).code, 'MODULE_NOT_FOUND');
       }
     });
 
@@ -355,7 +355,7 @@ describe('Mock Require', () => {
     });
 
     it.skip('should mock files in the node path by the full path', () => {
-      assert.equal(normalize(process.env.NODE_PATH), 'test/data/node-path');
+      assert.equal(normalize(process.env.NODE_PATH ?? ''), 'test/data/node-path');
 
       mock('in-node-path', () => ({ id: 'in-node-path' }), true);
 
