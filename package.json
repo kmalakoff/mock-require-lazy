@@ -43,7 +43,7 @@
     "build": "tsds build",
     "format": "tsds format",
     "prepublishOnly": "tsds validate",
-    "test": "tsds test:node --no-timeouts",
+    "test": "node test/run.cjs",
     "test:engines": "nvu engines npm test",
     "version": "tsds version"
   },
