@@ -2,6 +2,7 @@ import assert from 'assert';
 import mock from 'mock-require-lazy';
 import Module from 'module';
 import normalize from 'normalize-path';
+import { resolve } from 'path';
 
 const _require = typeof require === 'undefined' ? Module.createRequire(import.meta.url) : require;
 
@@ -176,13 +177,13 @@ describe('Mock Require', () => {
       assert.equal(b.dependentOn.dependentOn.id, 'external-module-a');
     });
 
-    it.skip('should mock files in the node path by the full path', () => {
-      assert.equal(normalize(process.env.NODE_PATH ?? ''), 'test/data/node-path');
+    it('should mock files in the node path by the full path', () => {
+      assert.equal(normalize(process.env.NODE_PATH ?? ''), normalize(resolve('test/data/node-path')));
 
       mock('in-node-path', { id: 'in-node-path' });
 
       const b = _require('in-node-path');
-      const c = _require('../data/node-path/in-node-path.cjs');
+      const c = _require('../data/node-path/in-node-path.js');
 
       assert.equal(b.id, 'in-node-path');
       assert.equal(c.id, 'in-node-path');
@@ -354,13 +355,13 @@ describe('Mock Require', () => {
       assert.equal(b.dependentOn.dependentOn.id, 'external-module-a');
     });
 
-    it.skip('should mock files in the node path by the full path', () => {
-      assert.equal(normalize(process.env.NODE_PATH ?? ''), 'test/data/node-path');
+    it('should mock files in the node path by the full path', () => {
+      assert.equal(normalize(process.env.NODE_PATH ?? ''), normalize(resolve('test/data/node-path')));
 
       mock('in-node-path', () => ({ id: 'in-node-path' }), true);
 
       const b = _require('in-node-path');
-      const c = _require('../data/node-path/in-node-path.cjs');
+      const c = _require('../data/node-path/in-node-path.js');
 
       assert.equal(b.id, 'in-node-path');
       assert.equal(c.id, 'in-node-path');

@@ -1,12 +1,16 @@
 # mock-require-lazy
 
-#### Simple, intuitive mocking of Node.js modules.
-
-[![Build Status](https://travis-ci.org/kmalakoff/mock-require-lazy.svg)](https://travis-ci.org/kmalakoff/mock-require-lazy)
+Replace modules loaded through `require()`, either immediately or when the module is first requested.
 
 ## About
 
-Simple, intuitive mocking of Node.js modules. Fork of mock-require adding lazy require and is a drop in replacement for mock-require.
+This is a fork of mock-require that adds lazy loading and keeps its API.
+
+## Installation
+
+```sh
+npm install mock-require-lazy
+```
 
 ## Usage
 
@@ -23,28 +27,29 @@ var http = require("http");
 http.request(); // 'http.request called'
 
 // lazy
-mock("path", {
-  // wrapped in a function
-  function() {
+mock("path", function () {
+  return {
     join: function () {
-    console.log("path.join called");
-  }},
-  true, // lazy
-});
+      console.log("path.join called");
+    }
+  };
+}, true);
 
-path = require("path");
+var path = require("path");
 path.join(); // 'path.join called'
 ```
 
+The examples use `require()`. This package intercepts CommonJS module loading; static ESM imports are not intercepted.
+
 ## API
 
-### `mock(path, mockExport)`
+### `mock(path, mockExport, lazy?)`
 
 **path**: `String`
 
 The module that you want to mock. This is the same string you would pass in if you wanted to `require` the module.
 
-This path should be relative to the current file, just as it would be if you were to `require` the module from the current file. mock-require-lazy is smart enough to mock this module everywhere it is required, even if it's required from a different file using a different relative path.
+This path should be relative to the current file, just as it would be if you were to `require` the module from the current file. mock-require-lazy also matches this module when another file requires it using a different relative path.
 
 **mockExport** : `object/function`
 
@@ -53,6 +58,10 @@ The function or object you want to be returned from `require`, instead of the `p
 **mockExport** : `string`
 
 The module you want to be returned from `require`, instead of the `path` module's export. This allows you to replace modules with other modules. For example, if you wanted to replace the `fs` module with the `path` module (you probably wouldn't, but if you did):
+
+**lazy** : `boolean`
+
+When true, `mockExport` must be a factory. The factory runs when the mocked module is first required.
 
 ```javascript
 mock('fs', 'path');
