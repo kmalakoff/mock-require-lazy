@@ -1,1 +1,2 @@
 ignores: ["mock-require-lazy", "node-version-use", "ts-dev-stack", "mocha-compat", "a", "b", "c", "in-node-path", "module-a"]
+ignoreDirs: [".tmp", ".worktrees"]

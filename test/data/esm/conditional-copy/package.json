@@ -1,0 +1,5 @@
+{
+  "name": "mrl-conditional-fixture",
+  "type": "module",
+  "exports": { ".": { "import": "./import.mjs", "require": "./require.cjs" } }
+}
