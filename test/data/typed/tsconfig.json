@@ -1,0 +1,1 @@
+{"compilerOptions":{"module":"esnext","target":"es2019","esModuleInterop":true},"include":["commonjs","module"],"exclude":["node_modules"]}

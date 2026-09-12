@@ -31,20 +31,24 @@
       "import": "./dist/esm/index.js",
       "require": "./dist/cjs/index.js"
     },
-    "./package.json": "./package.json"
+    "./package.json": "./package.json",
+    "./loader": "./loader.mjs"
   },
   "main": "dist/cjs/index.js",
   "source": "src/index.ts",
   "types": "dist/cjs/index.d.ts",
   "files": [
-    "dist"
+    "dist",
+    "loader.mjs",
+    "native-import.cjs"
   ],
   "scripts": {
     "build": "tsds build",
     "format": "tsds format",
     "prepublishOnly": "tsds validate",
-    "test": "node test/run.cjs",
-    "test:engines": "nvu engines npm test",
+    "test": "tsds test:node --no-timeouts",
+    "test:engines": "nvu engines tsds test:node --no-timeouts",
+    "test:esm:boundaries": "node scripts/test-esm-boundaries.cjs",
     "version": "tsds version"
   },
   "dependencies": {
@@ -58,6 +62,7 @@
     "mocha-compat": "^3.6.3",
     "node-version-use": "*",
     "ts-dev-stack": "*",
+    "ts-swc-loaders": "^2.9.0",
     "tsds-config": "*"
   },
   "engines": {

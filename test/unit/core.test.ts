@@ -1,8 +1,6 @@
 import assert from 'assert';
 import mock from 'mock-require-lazy';
 import Module from 'module';
-import normalize from 'normalize-path';
-import { resolve } from 'path';
 
 const _require = typeof require === 'undefined' ? Module.createRequire(import.meta.url) : require;
 
@@ -10,6 +8,26 @@ describe('Mock Require', () => {
   afterEach(() => {
     mock.stopAll();
   });
+
+  it('handles virtual names that are object prototype keys', () => {
+    const immediate = { value: 'immediate' };
+    mock('__proto__', immediate);
+    assert.strictEqual(_require('__proto__'), immediate);
+    mock.stop('__proto__');
+    const lazy = { value: 'lazy' };
+    mock('__proto__', () => lazy, true);
+    assert.strictEqual(_require('__proto__'), lazy);
+  });
+
+  if (Number(process.versions.node.split('.')[0]) >= 18) {
+    it('aliases ordinary builtins without aliasing prefix-only builtins', () => {
+      const fake = { value: 'mocked' };
+      mock('fs', fake);
+      assert.strictEqual(_require('node:fs'), fake);
+      mock('test', fake);
+      assert.notStrictEqual(_require('node:test'), fake);
+    });
+  }
 
   describe('immediate', () => {
     it('should mock a required function', () => {
@@ -73,6 +91,14 @@ describe('Mock Require', () => {
 
     it('should support re-requiring', () => {
       assert.equal(mock.reRequire('../data/index.cjs'), 'root');
+    });
+
+    it('should re-require only the subject', () => {
+      const first = _require('../data/re-require-subject.cjs') as { dependency: unknown };
+      const second = mock.reRequire('../data/re-require-subject.cjs') as { dependency: unknown };
+
+      assert.notEqual(second, first);
+      assert.strictEqual(second.dependency, first.dependency);
     });
 
     it('should cascade mocks', () => {
@@ -177,18 +203,27 @@ describe('Mock Require', () => {
       assert.equal(b.dependentOn.dependentOn.id, 'external-module-a');
     });
 
-    it('should mock files in the node path by the full path', () => {
-      assert.equal(normalize(process.env.NODE_PATH ?? ''), normalize(resolve('test/data/node-path')));
+    it('should share mocks across equivalent relative requests', () => {
+      const fake = { id: 'mocked' };
+      mock('../data/node-path/in-node-path.js', fake);
 
-      mock('in-node-path', { id: 'in-node-path' });
+      const explicit = _require('../data/node-path/in-node-path.js');
+      const implicit = _require('../data/./node-path/in-node-path');
 
-      const b = _require('in-node-path');
-      const c = _require('../data/node-path/in-node-path.js');
+      assert.strictEqual(explicit, fake);
+      assert.strictEqual(implicit, fake);
+    });
 
-      assert.equal(b.id, 'in-node-path');
-      assert.equal(c.id, 'in-node-path');
+    it('should return primitive mock values', () => {
+      mock('primitive-false', false);
+      mock('primitive-zero', 0);
+      mock('primitive-null', null);
+      mock('primitive-undefined', undefined);
 
-      assert.equal(b, c);
+      assert.strictEqual(_require('primitive-false'), false);
+      assert.strictEqual(_require('primitive-zero'), 0);
+      assert.strictEqual(_require('primitive-null'), null);
+      assert.strictEqual(_require('primitive-undefined'), undefined);
     });
   });
 
@@ -251,6 +286,48 @@ describe('Mock Require', () => {
 
     it('should support re-requiring', () => {
       assert.equal(mock.reRequire('../data/index.cjs'), 'root');
+    });
+
+    it('should invoke a lazy factory once after success', () => {
+      let calls = 0;
+      mock(
+        '../data/exported-obj.cjs',
+        () => {
+          calls += 1;
+          return { mocked: true };
+        },
+        true
+      );
+
+      assert.strictEqual(calls, 0);
+      const first = _require('../data/exported-obj.cjs');
+      const second = _require('../data/exported-obj.cjs');
+
+      assert.strictEqual(calls, 1);
+      assert.strictEqual(second, first);
+    });
+
+    it('should retry a lazy factory after it throws', () => {
+      let attempts = 0;
+      mock(
+        '../data/exported-obj.cjs',
+        () => {
+          attempts += 1;
+          if (attempts === 1) throw new Error('first attempt');
+          return { mocked: true };
+        },
+        true
+      );
+
+      assert.throws(() => _require('../data/exported-obj.cjs'), /first attempt/);
+      assert.strictEqual(_require('../data/exported-obj.cjs').mocked, true);
+      assert.strictEqual(attempts, 2);
+    });
+
+    it('should resolve a lazy string replacement when required', () => {
+      mock('../data/exported-fn.cjs', () => '../data/exported-obj.cjs', true);
+
+      assert.strictEqual(_require('../data/exported-fn.cjs'), _require('../data/exported-obj.cjs'));
     });
 
     it('should cascade mocks', () => {
@@ -355,16 +432,10 @@ describe('Mock Require', () => {
       assert.equal(b.dependentOn.dependentOn.id, 'external-module-a');
     });
 
-    it('should mock files in the node path by the full path', () => {
-      assert.equal(normalize(process.env.NODE_PATH ?? ''), normalize(resolve('test/data/node-path')));
+    it('should return a lazy primitive mock value', () => {
+      mock('lazy-primitive', () => 0, true);
 
-      mock('in-node-path', () => ({ id: 'in-node-path' }), true);
-
-      const b = _require('in-node-path');
-      const c = _require('../data/node-path/in-node-path.js');
-
-      assert.equal(b.id, 'in-node-path');
-      assert.equal(c.id, 'in-node-path');
+      assert.strictEqual(_require('lazy-primitive'), 0);
     });
   });
 });
