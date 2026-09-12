@@ -1,6 +1,6 @@
 {
   "name": "mock-require-lazy",
-  "version": "2.0.13",
+  "version": "3.0.0",
   "description": "Mock CommonJS require and native ESM import, together or separately, with lazy factories. A drop-in replacement for mock-require",
   "keywords": [
     "require",
